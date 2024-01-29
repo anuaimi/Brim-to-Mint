@@ -1,6 +1,7 @@
 use std::error::Error;
 use std::fs::File;
-// use chrono::NaiveDate;
+use std::env;
+// use std::mem::transmute_copy;
 
 
 fn transactions( input_file: &str, output_file: &str) -> Result<(), Box<dyn Error>> {
@@ -23,14 +24,15 @@ fn transactions( input_file: &str, output_file: &str) -> Result<(), Box<dyn Erro
     let transaction_date = fields[1].to_string();
     let date = chrono::NaiveDate::parse_from_str(transaction_date.as_str(), "%Y-%m-%d")?;
     let transaction_payee = fields[3].to_string();
-    let transaction_amount = fields[5].to_string();
+    let mut transaction_amount = fields[5].parse::<f64>().unwrap();
+    transaction_amount = transaction_amount * -1.0;
 
     let mut output_fields = Vec::new();
 
     output_fields.push(date.format("%m/%d/%Y").to_string());
     output_fields.push(transaction_payee.clone());
     output_fields.push(transaction_payee);
-    output_fields.push(transaction_amount);
+    output_fields.push(transaction_amount.to_string());
     output_fields.push("".to_string());
     output_fields.push("".to_string());
     output_fields.push("".to_string());
@@ -47,11 +49,17 @@ fn transactions( input_file: &str, output_file: &str) -> Result<(), Box<dyn Erro
 
 fn main() -> Result<(), Box<dyn Error>> {
 
-  // input file
-  let input_file = "data/2024-0117-brim.csv";
-  let output_file =  "data/2024-0117-mint-new.csv";
+  let args: Vec<String> = env::args().collect();
+  if args.len() < 2 {
+    return Err("Please provide a filename".into());
+  }
 
-  if let Err(err) = transactions(input_file, output_file) {
+  // input file
+  let input_file = &args[1];
+  let pieces: Vec<&str> = input_file.split(".").collect();
+  let output_file = format!("{}-mint.{}",  &pieces[0], &pieces[1]);
+  
+  if let Err(err) = transactions(input_file, output_file.as_str()) {
     println!("error converting transactions: {}", err);
     // process::exit(1);
   }
