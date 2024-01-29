@@ -1,0 +1,9 @@
+[package]
+name = "brim-to-qif"
+version = "0.1.0"
+authors = ["Athir Nuaimi"]
+
+[dependencies]
+chrono = "0.4.33"
+csv = "1.3"
+
