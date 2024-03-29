@@ -14,7 +14,6 @@ the output will be in Mint format which Quicken can import
 ```
 
 ## Older Code
-
 there is also an older ruby script that does some thing similar
 
 ```ruby
